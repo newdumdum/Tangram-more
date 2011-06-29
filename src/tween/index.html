@@ -1,0 +1,201 @@
+<!-- Quriks Mode -->
+<!Doctype html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>测试Tween类</title>
+		<script type="text/javascript" src="http://img.baidu.com/js/tangram-1.3.6.js"></script>
+        <script type="text/javascript" src="easing.js"></script> 
+        <script type="text/javascript" src="tween.js"></script> 
+		<style>
+			body {
+				font:400 12px/20px 宋体;
+				background-color:#F9F9F9;
+				overflow:hidden;
+			}
+		</style>
+		<script>			
+            try {
+                document.execCommand("BackgroundImageCache", false, true);
+            } catch (ex) {
+            }  		
+		</script>
+		
+	</head>
+	<body>
+		<div id='tweenBlcok' style="font-size:1px;line-height:1px;width:100px;height:100px;border:1px solid #FFF;background:#999;position:absolute;left:10px;top:10px;"></div>
+		
+		<div id='testIconBlock' style="position:absolute;left:200px;top:200px;">
+			<div style="display:inline-block;width:100px;height:100px;background:red;border:1px solid #FFF;"></div>
+		</div>
+		<div style="position:absolute;left:100px;bottom:10px;">
+			<input type="button" value="随机缓冲移动" onclick='moveTo()'>
+			<input type="button" value="果冻效果(300)" onclick='jellyEffect()'>
+			<input type="button" value="掉落效果" onclick='drop()'>
+			<input type="button" value="透明一下" onclick='opacity()'>
+			<input type="button" value="Bling Icon" onclick='bling()'>
+			<input type="button" value="Fly Icon" onclick='iconFly()'>
+			<input type="button" value="背景颜色随机渐变" onclick='iconColor()'>
+		</div>
+		
+	</body>
+	<script>
+		var baidu = baidu || T;
+		var Easing = baidu.more.Easing, Tween = baidu.more.Tween;
+		var mainBlcok = document.getElementById('tweenBlcok'), adBlock = document.getElementById('testIconBlock'),
+		mainMoveTween, mainMoveTween2, alphaTween, flyTween, flyTween2;
+		function moveTo(){
+			if(mainMoveTween){
+				mainMoveTween.stop();
+			}
+			if(mainMoveTween2){
+				mainMoveTween2.stop();
+			}
+			var pos = baidu.dom.getPosition(mainBlcok);
+			var w = mainBlcok.clientWidth, h = mainBlcok.clientHeight, toX = Math.ceil(getRandom(0, baidu.page.getWidth() - w)),
+			toY = Math.ceil(getRandom(0, baidu.page.getHeight() - h));
+			mainMoveTween = new Tween(mainBlcok, 'left', pos.left, toX, Easing.Elastic.easeInOut, .8);
+			mainMoveTween2 = new Tween(mainBlcok, 'top', pos.top, toY, Easing.Elastic.easeInOut, .8);
+		}
+		
+		function jellyEffect(){
+			if(mainMoveTween){
+				mainMoveTween.stop();
+			}
+			if(mainMoveTween2){
+				mainMoveTween2.stop();
+			}
+			var runTime = .4, margin = 80, effect = Easing.Bounce.easeOut;
+			var elm = document.getElementById('tweenBlcok'), pos = baidu.dom.getPosition(elm), w = elm.clientWidth, h = elm.clientHeight;
+			
+			new Tween(elm, 'width', w, w - margin, effect, runTime, function(){
+				new Tween(elm, 'width', w - margin, w, effect, runTime);
+			});
+			new Tween(elm, 'height', h, h - margin, effect, runTime, function(){
+				new Tween(elm, 'height', h - margin, h, effect, runTime);
+			});
+			
+			mainMoveTween = new Tween(elm, 'left', pos.left, pos.left + margin/2, effect, runTime, function(){
+				mainMoveTween = new Tween(elm, 'left', pos.left + margin/2, pos.left, effect, runTime);
+			});
+			mainMoveTween2 = new Tween(elm, 'top', pos.top, pos.top + margin/2, effect, runTime, function(){
+				mainMoveTween2 = new Tween(elm, 'top', pos.top + margin/2, pos.top, effect, runTime);
+			});
+		}
+		
+		function drop(){
+			var runTime = .4, margin = 80, effect = Easing.Bounce.easeOut;
+			var elm = document.getElementById('tweenBlcok'), pos = baidu.dom.getPosition(elm), h = elm.clientHeight;
+			if(mainMoveTween){
+				mainMoveTween.stop();
+			}
+			if(mainMoveTween2){
+				mainMoveTween2.stop();
+			}
+			mainMoveTween = new Tween(elm, 'top', pos.top, baidu.page.getHeight() - h - 50, effect, runTime, function(){
+				//new Tween(elm, 'top', baidu.page.getHeight() - h - 50, pos.top, effect, runTime);
+			});
+		}
+		
+		function opacity(){
+			var runTime = .5, margin = 80, effect = Easing.Linear;	
+			if(alphaTween){
+				alphaTween.stop();
+			}
+			alphaTween = new Tween(mainBlcok, 'opacity', 100, 0, effect, runTime, function(){
+				alphaTween = new Tween(mainBlcok, 'opacity', 0, 100, effect, runTime);
+			});
+		}
+		
+		var blingCount = 0, blingEnd = true;
+		function bling(){
+			if(!blingEnd){
+				return;
+			}
+			var box = document.getElementById('testIconBlock'), icon = box.getElementsByTagName('div')[0];
+			var w = icon.clientWidth, h = icon.clientHeight;
+			var effect = Easing.Linear, margin = 50, runTime = .3;
+			new Tween(icon, 'width', w, w - margin, effect, runTime, function(){
+				new Tween(icon, 'width', w - margin, w, effect, runTime);
+			});
+			new Tween(icon, 'margin-left', 0, margin / 2, effect, runTime, function(){
+				new Tween(icon, 'margin-left', margin / 2, 0, effect, runTime);
+			});
+			
+			
+			new Tween(icon, 'height', h, h - margin, effect, runTime, function(){
+				new Tween(icon, 'height', h - margin, h, effect, runTime);
+			});
+			new Tween(icon, 'margin-top', 0, margin / 2, effect, runTime, function(){
+				new Tween(icon, 'margin-top', margin / 2, 0, effect, runTime);
+			});
+			
+			if (blingCount >= 0) {
+				setTimeout(function(){
+					blingEnd = true;
+					blingCount ++;
+					bling();
+				}, 1200);
+				blingEnd = false;
+			}else{
+				blingCount = 0;
+				blingEnd = true;
+			}
+		}
+		
+		function iconFly(){
+			if(flyTween){
+				flyTween.stop();
+			}
+			if(flyTween2){
+				flyTween2.stop();
+			}
+			var box = document.getElementById('testIconBlock'), pos = baidu.dom.getPosition(box), w = box.clientWidth, h = box.clientHeight;
+			var runTime = .8, effect = Easing.Expo.easeInOut;
+			var toX = Math.ceil(getRandom(0, baidu.page.getWidth() - w)),
+			toY = Math.ceil(getRandom(0, baidu.page.getHeight() - h));
+			flyTween = new Tween(box, 'left', pos.left, toX, effect, runTime, function(){
+				checkFlyOk({x:'ok'});
+			});
+			flyTween2 = new Tween(box, 'top', pos.top, toY, effect, runTime, function(){
+				checkFlyOk({y:'ok'});
+			});
+		}
+		
+		var allOkObj =  {x: 'no', y: 'no'};
+		function checkFlyOk(o){
+			o.x && (allOkObj.x = o.x);
+			o.y && (allOkObj.y = o.y);
+			
+			if(allOkObj.x == 'ok' && allOkObj.y == 'ok'){
+				setTimeout(function(){
+					allOkObj =  {x: 'no', y: 'no'};
+					iconFly();
+				}, 200)
+			}
+		}
+		
+		function getRandom(a, b){
+			return a + Math.random() * b;
+		}
+
+
+
+		var bgColor = '#F9F9F9', colorTween;
+		function iconColor(){
+			var block = document.body;//document.getElementById('tweenBlcok');
+			if(colorTween){
+				colorTween.stop();
+			}
+			var newColor = 'rgb(' + Math.ceil(getRandom (0, 255)) + ',' +  Math.ceil(getRandom (0, 255)) + ',' +  Math.ceil(getRandom (0, 255)) + ')';
+			colorTween = new Tween(block, 'background-color', bgColor, newColor, Easing.Linear, 1, function(){
+				bgColor = newColor;
+				
+				setTimeout(function(){
+					iconColor();
+				}, 1000);
+			});
+		}
+	
+	</script>
+</html>
